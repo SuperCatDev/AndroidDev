@@ -1,0 +1,91 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven'
+
+def baseBuildName = "SafeSdk"
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28
+        versionCode 1
+        versionName getGitVersionName()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    libraryVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = getBuildFileName(baseBuildName)
+        }
+    }
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinx_version"
+
+    // Arrow
+    implementation "io.arrow-kt:arrow-core:$arrow_version"
+
+    // AndroidX
+    implementation "androidx.appcompat:appcompat:$androidx_version"
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.4.0"
+    implementation "com.squareup.retrofit2:converter-moshi:2.0.0"
+
+    // Tests
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    // Gson
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+def getGitVersionName() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        workingDir '..'
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    def version = stdout.toString().trim()
+    return version
+}
+
+def getBuildFileName(baseName) {
+    return "$baseName-${getGitVersionName()}.aar"
+}
+
+// Товарищ! Прежде чем выкладывать версию на репозиторий -- поставь новый тег (major.minor.sprint.x).
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://docker-registry.niisokb.ru:8081/repository/android") {
+                pom.groupId = "ru.niisokb.safesdk"
+                pom.artifactId = "safesdk"
+                pom.version = getGitVersionName()
+            }
+        }
+    }
+}

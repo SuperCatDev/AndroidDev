@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SDK Test App</string>
+    <string name="single_log_message">Single log message</string>
+    <string name="_1000_log_messages">1000 log messages</string>
+    <string name="multiline_message">Multiline message</string>
+    <string name="log_levels_messages">V-D-I-W-E-A Messages</string>
+    <string name="response_code">Response code</string>
+    <string name="not_available">N/A</string>
+    <string name="service_url">Service URL</string>
+    <string name="title_activity_apply_config_test">ApplyConfigTestActivity</string>
+    <string name="apply_config"><![CDATA[Apply config >>]]></string>
+    <string name="logs_activity"><![CDATA[<< Logs activity]]></string>
+</resources>
